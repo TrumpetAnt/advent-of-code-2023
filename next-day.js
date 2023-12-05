@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fs = require('fs');
 
 let highestDay = 0;
 fs.readdir(__dirname, { withFileTypes: true }, (err, files) => {
@@ -9,7 +9,7 @@ fs.readdir(__dirname, { withFileTypes: true }, (err, files) => {
     files
       .filter((file) => file.isDirectory())
       .forEach((file) => {
-        const parts = file.name.split("-");
+        const parts = file.name.split('-');
         if (parts.length === 2) {
           const n = parseInt(parts[1]);
           if (n > highestDay) {
