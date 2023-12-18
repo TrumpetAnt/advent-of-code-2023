@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::fmt;
 use std::fs::File;
 use std::io::{self, BufRead};
@@ -80,6 +81,44 @@ fn adjacent_part(map: &Vec<Vec<Tile>>, p: (i32, i32)) -> bool {
     return false;
 }
 
+fn calc_gear_ratio(map: &Vec<Vec<Tile>>, p: (i32, i32)) -> i32 {
+    let wee = vec![
+        (p.0 + 1, p.1 + 0),
+        (p.0 + 0, p.1 + 1),
+        (p.0 + 1, p.1 + 1),
+        (p.0 - 1, p.1 + 1),
+        (p.0 + 1, p.1 - 1),
+        (p.0 - 1, p.1 - 0),
+        (p.0 - 0, p.1 - 1),
+        (p.0 - 1, p.1 - 1),
+    ];
+    let height = map.len().try_into().unwrap();
+    let width = map[0].len().try_into().unwrap();
+    let mut res: HashSet<i32> = HashSet::new();
+    for yaoza in wee {
+        if yaoza.0 < 0 || yaoza.0 >= width {
+            continue;
+        }
+        if yaoza.1 < 0 || yaoza.1 >= height {
+            continue;
+        }
+        let x = &map[yaoza.1 as usize];
+        let y = &x[yaoza.0 as usize];
+        match y {
+            Tile::Number(n) => {
+                res.insert(n.clone());
+            }
+            _ => {}
+        }
+    }
+
+    if res.len() != 2 {
+        return 0;
+    }
+
+    return res.iter().fold(1, |acc, e| acc * e);
+}
+
 fn yeyeyeye(map: &Vec<Tile>, i: usize) -> usize {
     for (j, t) in map[i..].iter().enumerate() {
         match t {
@@ -114,6 +153,7 @@ fn main() {
 
         println!("");
         let mut res: Vec<(i32, (usize, usize))> = Vec::new();
+        let mut gear_total = 0;
         for (j, row) in map.iter().enumerate() {
             let mut calc = false;
             let mut val = false;
@@ -153,7 +193,13 @@ fn main() {
                     Tile::Gear => {
                         calc = false;
                         val = false;
-                        print!("*");
+                        let paoskdf = calc_gear_ratio(&map, (i as i32, j as i32));
+                        gear_total += paoskdf;
+                        if paoskdf > 0 {
+                            print!("X");
+                        } else {
+                            print!("*");
+                        }
                     }
                     _ => {
                         calc = false;
@@ -167,11 +213,14 @@ fn main() {
         println!("");
 
         let mut res_sum = 0;
-        for (r, gg) in res.iter().enumerate() {
+        for (_, gg) in res.iter().enumerate() {
             // println!("{:3} {:3}: ({:3},{:3})", r, gg.0, gg.1 .0, gg.1 .1);
             res_sum += gg.0;
         }
-        println!("Total: {}", res_sum);
+        println!(
+            "Loose parts total: {}. Gear ratio totals: {}",
+            res_sum, gear_total
+        );
     }
 }
 
