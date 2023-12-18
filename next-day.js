@@ -22,7 +22,7 @@ const langs = [
   'py',
   'f90',
   'lisp',
-  'kt',
+  'd',
   'SM',
   'jl',
   'bf',
